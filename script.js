@@ -1,45 +1,36 @@
-let tasks = [];
-
-const addTask = ()=> {
-    const taskInput = document.getElementById('taskInput')
-    const text = taskInput.value.trim();
-
-    if(text) {
-        tasks.push({text: text, completed:false})
-        taskInput.value = "";
-        updataskList();
-
-    };
-
-};
-const updataskList =()=>{
-    const taskList = document.getElementById('task-list')
-    taskList.innerHTML = ''
-
-    tasks.forEach((task, index) => {
-        const listItem = document.createElement('li');
-
-        listItem.innerHTML = `
-        <div class="taskItem">
-            <div class="task ${task.completed ? 'completed':}">
-                <input type="checkbox" class="checkbox" ${task.completed ? "checked" : ""}/>
-                <p> ${task.text}</p>
-            </div>
-            <div class="icons">
-                <img src="./img/edit.png" onclick="editTask(${index})"/>
-                <img src="./img/bin.png"  onclick="deleteTask(${index})"/>
-            </div>
-        </div> `;
-    listItem.addEventListener('change', ()=> toggleTaskComplete(index))
-         taskList.append(listItem);
-
-
-    })
-
-   
+const inputBox = document.getElementById('input-box')
+const listContainer = document.getElementById('list-container')
+function addTask(){
+    if(inputBox.value === ''){
+        alert("You must write something");
+    }
+    else{
+        let li = document.createElement("li");
+        li.innerHTML = inputBox.value;
+        listContainer.appendChild(li);
+        let span = document.createElement("span");
+        span.innerHTML = "\u00d7";
+        li.appendChild(span);
+    }
+    inputBox.value = "";
+    saveData();
 }
-document.getElementById('newTask').addEventListener('click', function(e){
-    e.preventDefault();
 
-    addTask();
-})
+listContainer.addEventListener("click", function(e){
+    if(e.target.tagName === "LI"){
+        e.target.classList.toggle("checked");
+        saveData();
+    }
+    else if(e.target.tagName === "SPAN"){
+        e.target.parentElement.remove();
+        saveData();
+    }
+}, false);
+
+function saveData(){
+    localStorage.setItem("data", listContainer.innerHTML)
+}
+function showTask(){
+    listContainer.innerHTML = localStorage.getItem("data")
+}
+showTask();
